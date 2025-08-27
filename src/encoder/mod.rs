@@ -243,7 +243,7 @@ struct EncoderState {
     /// Track the bytes written to the payload writer
     payload_write_position: u64,
 
-    /// Previously generated payload offset
+    /// Previously generated payload offset.
     previous_payload_offset: Option<PayloadOffset>,
 
     /// Mark the encoder state as correctly finished, ready to be dropped
@@ -266,9 +266,9 @@ impl EncoderState {
         self.previous_payload_offset
     }
 
-    /// Generate a PayloadRef from the given payload offset and file size.
+    /// Generate a [`PayloadRef`] from the given payload offset and file size.
     ///
-    /// Checks if the provided payload offset is greater than the current payload writeer position
+    /// Checks if the provided payload offset is greater than the current payload writer position
     /// and larger than the previously checked payload offset. Both are required for the sequential
     /// decoder to be able to restore contents.
     fn payload_ref_from(
