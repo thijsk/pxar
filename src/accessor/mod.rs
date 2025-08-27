@@ -1060,7 +1060,12 @@ impl<T: ReadAt> decoder::SeqRead for SeqReadAtAdapter<T> {
                             io::Result::Ok(ReadResult { len, buffer })
                         });
                     // Ditch the self-reference life-time now:
-                    this.future = Some(unsafe { mem::transmute(future) });
+                    this.future = Some(unsafe {
+                        mem::transmute::<
+                            Pin<Box<dyn Future<Output = io::Result<ReadResult>> + '_>>,
+                            Pin<Box<dyn Future<Output = io::Result<ReadResult>> + 'static>>,
+                        >(future)
+                    });
                 }
                 Some(mut fut) => match fut.as_mut().poll(cx) {
                     Poll::Pending => {

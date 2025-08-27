@@ -386,7 +386,12 @@ impl<T: Clone + ReadAt> tokio::io::AsyncRead for FileContents<T> {
                     // store this in a pinned self. T maybe a reference with a non-'static life
                     // time, but then it cannot be a self-reference into Self, so this should be
                     // valid in all cases:
-                    this.future = Some(unsafe { mem::transmute(future) });
+                    this.future = Some(unsafe {
+                        mem::transmute::<
+                            Pin<Box<dyn Future<Output = io::Result<ReadResult>> + '_>>,
+                            Pin<Box<dyn Future<Output = io::Result<ReadResult>> + 'static>>,
+                        >(future)
+                    });
                 }
                 Some(mut fut) => match fut.as_mut().poll(cx) {
                     Poll::Pending => {
