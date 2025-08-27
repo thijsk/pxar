@@ -243,6 +243,9 @@ struct EncoderState {
     /// Track the bytes written to the payload writer
     payload_write_position: u64,
 
+    /// Previously generated payload offset
+    previous_payload_offset: Option<PayloadOffset>,
+
     /// Mark the encoder state as correctly finished, ready to be dropped
     finished: bool,
 }
@@ -256,6 +259,46 @@ impl EncoderState {
     #[inline]
     fn payload_position(&self) -> u64 {
         self.payload_write_position
+    }
+
+    #[inline]
+    fn previous_payload_offset(&self) -> Option<PayloadOffset> {
+        self.previous_payload_offset
+    }
+
+    /// Generate a PayloadRef from the given payload offset and file size.
+    ///
+    /// Checks if the provided payload offset is greater than the current payload writeer position
+    /// and larger than the previously checked payload offset. Both are required for the sequential
+    /// decoder to be able to restore contents.
+    fn payload_ref_from(
+        &mut self,
+        payload_offset: PayloadOffset,
+        size: u64,
+    ) -> io::Result<PayloadRef> {
+        let payload_position = self.payload_position();
+        if payload_offset.raw() < payload_position {
+            io_bail!(
+                "offset smaller than current position: {} < {payload_position}",
+                payload_offset.raw()
+            );
+        }
+
+        if let Some(previous_payload_offset) = self.previous_payload_offset() {
+            if payload_offset <= previous_payload_offset {
+                io_bail!(
+                    "unexpected payload offset {} not larger than previous offset {}",
+                    payload_offset.raw(),
+                    previous_payload_offset.raw(),
+                );
+            }
+        }
+        self.previous_payload_offset = Some(payload_offset);
+
+        Ok(PayloadRef {
+            offset: payload_offset.raw(),
+            size,
+        })
     }
 
     fn merge_error(&mut self, error: Option<EncodeError>) {
@@ -454,16 +497,12 @@ impl<'a, T: SeqWrite + 'a> EncoderImpl<'a, T> {
         if let Some(payload_output) = output.payload_mut() {
             // payload references must point to the position prior to the payload header,
             // separating payload entries in the payload stream
-            let payload_position = state.payload_position();
+            let payload_position = PayloadOffset(state.payload_position());
+            let payload_ref = state.payload_ref_from(payload_position, file_size)?;
 
             let header = format::Header::with_content_size(format::PXAR_PAYLOAD, file_size);
             header.check_header_size()?;
             seq_write_struct(payload_output, header, &mut state.payload_write_position).await?;
-
-            let payload_ref = PayloadRef {
-                offset: payload_position,
-                size: file_size,
-            };
 
             seq_write_pxar_entry(
                 output.archive_mut(),
@@ -566,16 +605,9 @@ impl<'a, T: SeqWrite + 'a> EncoderImpl<'a, T> {
             io_bail!("unable to add payload reference");
         }
 
-        let offset = payload_offset.raw();
-        let payload_position = self.state()?.payload_position();
-        if offset < payload_position {
-            io_bail!("offset smaller than current position: {offset} < {payload_position}");
-        }
-
-        let payload_ref = PayloadRef {
-            offset,
-            size: file_size,
-        };
+        let payload_ref = self
+            .state_mut()?
+            .payload_ref_from(payload_offset, file_size)?;
         let this_offset: LinkOffset = self
             .add_file_entry(
                 Some(metadata),
@@ -749,6 +781,7 @@ impl<'a, T: SeqWrite + 'a> EncoderImpl<'a, T> {
         // the child will write to OUR state now:
         let write_position = state.position();
         let payload_write_position = state.payload_position();
+        let previous_payload_offset = state.previous_payload_offset();
 
         self.state.push(EncoderState {
             items: Vec::new(),
@@ -759,6 +792,7 @@ impl<'a, T: SeqWrite + 'a> EncoderImpl<'a, T> {
             file_hash,
             write_position,
             payload_write_position,
+            previous_payload_offset,
             finished: false,
         });
 
