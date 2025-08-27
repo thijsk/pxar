@@ -109,7 +109,7 @@ mod tok {
         }
     }
 
-    impl<'a, T: crate::decoder::SeqRead> tokio::io::AsyncRead for Contents<'a, T> {
+    impl<T: crate::decoder::SeqRead> tokio::io::AsyncRead for Contents<'_, T> {
         fn poll_read(
             self: Pin<&mut Self>,
             cx: &mut Context<'_>,

@@ -292,7 +292,7 @@ pub(crate) enum EncoderOutput<'a, T> {
     Borrowed(&'a mut T),
 }
 
-impl<'a, T> std::convert::AsMut<T> for EncoderOutput<'a, T> {
+impl<T> std::convert::AsMut<T> for EncoderOutput<'_, T> {
     fn as_mut(&mut self) -> &mut T {
         match self {
             EncoderOutput::Owned(o) => o,
@@ -301,7 +301,7 @@ impl<'a, T> std::convert::AsMut<T> for EncoderOutput<'a, T> {
     }
 }
 
-impl<'a, T> std::convert::From<T> for EncoderOutput<'a, T> {
+impl<T> std::convert::From<T> for EncoderOutput<'_, T> {
     fn from(t: T) -> Self {
         EncoderOutput::Owned(t)
     }
@@ -1090,7 +1090,7 @@ pub(crate) struct FileImpl<'a, S: SeqWrite> {
     parent: &'a mut EncoderState,
 }
 
-impl<'a, S: SeqWrite> Drop for FileImpl<'a, S> {
+impl<S: SeqWrite> Drop for FileImpl<'_, S> {
     fn drop(&mut self) {
         if self.remaining_size != 0 {
             self.parent.add_error(EncodeError::IncompleteFile);
@@ -1100,7 +1100,7 @@ impl<'a, S: SeqWrite> Drop for FileImpl<'a, S> {
     }
 }
 
-impl<'a, S: SeqWrite> FileImpl<'a, S> {
+impl<S: SeqWrite> FileImpl<'_, S> {
     /// Get the file offset to be able to reference it with `add_hardlink`.
     pub fn file_offset(&self) -> LinkOffset {
         LinkOffset(self.goodbye_item.offset)
@@ -1200,7 +1200,7 @@ impl<'a, S: SeqWrite> FileImpl<'a, S> {
 }
 
 #[cfg(feature = "tokio-io")]
-impl<'a, S: SeqWrite> tokio::io::AsyncWrite for FileImpl<'a, S> {
+impl<S: SeqWrite> tokio::io::AsyncWrite for FileImpl<'_, S> {
     fn poll_write(self: Pin<&mut Self>, cx: &mut Context, buf: &[u8]) -> Poll<io::Result<usize>> {
         FileImpl::poll_write(self, cx, buf)
     }

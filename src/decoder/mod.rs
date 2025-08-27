@@ -68,7 +68,7 @@ pub trait SeqRead {
 }
 
 /// Allow using trait objects for generics taking a `SeqRead`:
-impl<'a> SeqRead for &mut (dyn SeqRead + 'a) {
+impl SeqRead for &mut (dyn SeqRead + '_) {
     fn poll_seq_read(
         self: Pin<&mut Self>,
         cx: &mut Context,
@@ -848,7 +848,7 @@ impl<'a, T: SeqRead> Contents<'a, T> {
     }
 }
 
-impl<'a, T: SeqRead> SeqRead for Contents<'a, T> {
+impl<T: SeqRead> SeqRead for Contents<'_, T> {
     fn poll_seq_read(
         mut self: Pin<&mut Self>,
         cx: &mut Context,

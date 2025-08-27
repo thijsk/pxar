@@ -317,7 +317,7 @@ pub struct DirEntry<'a, T: Clone + ReadAt> {
     inner: accessor::DirEntryImpl<'a, T>,
 }
 
-impl<'a, T: Clone + ReadAt> DirEntry<'a, T> {
+impl<T: Clone + ReadAt> DirEntry<'_, T> {
     /// Get the current file name.
     pub fn file_name(&self) -> &Path {
         self.inner.file_name()

@@ -339,7 +339,7 @@ pub struct ReadDir<'a, T> {
     inner: accessor::ReadDirImpl<'a, T>,
 }
 
-impl<'a, T: Clone + ReadAt> ReadDir<'a, T> {
+impl<T: Clone + ReadAt> ReadDir<'_, T> {
     /// Efficient alternative to `Iterator::skip`.
     #[inline]
     pub fn skip(self, n: usize) -> Self {
@@ -367,7 +367,7 @@ impl<'a, T: Clone + ReadAt> Iterator for ReadDir<'a, T> {
     }
 }
 
-impl<'a, T: Clone + ReadAt> std::iter::FusedIterator for ReadDir<'a, T> {}
+impl<T: Clone + ReadAt> std::iter::FusedIterator for ReadDir<'_, T> {}
 
 /// A directory entry. When iterating through the contents of a directory we first get access to
 /// the file name. The remaining information can be decoded afterwards.
@@ -376,7 +376,7 @@ pub struct DirEntry<'a, T: Clone + ReadAt> {
     inner: accessor::DirEntryImpl<'a, T>,
 }
 
-impl<'a, T: Clone + ReadAt> DirEntry<'a, T> {
+impl<T: Clone + ReadAt> DirEntry<'_, T> {
     /// Get the current file name.
     pub fn file_name(&self) -> &Path {
         self.inner.file_name()

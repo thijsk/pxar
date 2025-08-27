@@ -221,14 +221,14 @@ pub struct File<'a, S: SeqWrite> {
     inner: encoder::FileImpl<'a, S>,
 }
 
-impl<'a, S: SeqWrite> File<'a, S> {
+impl<S: SeqWrite> File<'_, S> {
     /// Get the file offset to be able to reference it with `add_hardlink`.
     pub fn file_offset(&self) -> LinkOffset {
         self.inner.file_offset()
     }
 }
 
-impl<'a, S: SeqWrite> io::Write for File<'a, S> {
+impl<S: SeqWrite> io::Write for File<'_, S> {
     fn write(&mut self, data: &[u8]) -> io::Result<usize> {
         poll_result_once(self.inner.write(data))
     }

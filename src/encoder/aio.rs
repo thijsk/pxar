@@ -220,7 +220,7 @@ pub struct File<'a, S: SeqWrite> {
     inner: encoder::FileImpl<'a, S>,
 }
 
-impl<'a, S: SeqWrite> File<'a, S> {
+impl<S: SeqWrite> File<'_, S> {
     /// Get the file offset to be able to reference it with `add_hardlink`.
     pub fn file_offset(&self) -> LinkOffset {
         self.inner.file_offset()
@@ -238,7 +238,7 @@ impl<'a, S: SeqWrite> File<'a, S> {
 }
 
 #[cfg(feature = "tokio-io")]
-impl<'a, S: SeqWrite> tokio::io::AsyncWrite for File<'a, S> {
+impl<S: SeqWrite> tokio::io::AsyncWrite for File<'_, S> {
     fn poll_write(self: Pin<&mut Self>, cx: &mut Context, data: &[u8]) -> Poll<io::Result<usize>> {
         unsafe { self.map_unchecked_mut(|this| &mut this.inner) }.poll_write(cx, data)
     }

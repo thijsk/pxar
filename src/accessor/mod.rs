@@ -112,7 +112,7 @@ where
 }
 
 /// Allow using trait objects for `T: ReadAt`
-impl<'d> ReadAt for &(dyn ReadAt + 'd) {
+impl ReadAt for &(dyn ReadAt + '_) {
     fn start_read_at<'a>(
         self: Pin<&'a Self>,
         cx: &mut Context,
@@ -873,7 +873,7 @@ pub(crate) struct DirEntryImpl<'a, T: Clone + ReadAt> {
     caches: Arc<Caches>,
 }
 
-impl<'a, T: Clone + ReadAt> DirEntryImpl<'a, T> {
+impl<T: Clone + ReadAt> DirEntryImpl<'_, T> {
     pub fn file_name(&self) -> &Path {
         &self.file_name
     }

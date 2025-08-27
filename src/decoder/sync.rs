@@ -133,7 +133,7 @@ pub struct Contents<'a, T: SeqRead> {
     inner: decoder::Contents<'a, T>,
 }
 
-impl<'a, T: SeqRead> io::Read for Contents<'a, T> {
+impl<T: SeqRead> io::Read for Contents<'_, T> {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         poll_result_once(super::seq_read(&mut self.inner, buf))
     }
