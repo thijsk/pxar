@@ -4,7 +4,7 @@ use std::io::{self, Read};
 
 use endian_trait::Endian;
 
-use pxar::{decoder, format, EntryKind};
+use pxar::{EntryKind, decoder, format};
 
 fn write_raw_struct<T: Endian, W: io::Write + ?Sized>(output: &mut W, data: T) -> io::Result<()> {
     let data = data.to_le();

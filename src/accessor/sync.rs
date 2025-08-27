@@ -7,7 +7,7 @@ use std::pin::Pin;
 use std::sync::Arc;
 use std::task::Context;
 
-use crate::accessor::{self, cache::Cache, ContentRange, MaybeReady, ReadAt, ReadAtOperation};
+use crate::accessor::{self, ContentRange, MaybeReady, ReadAt, ReadAtOperation, cache::Cache};
 use crate::decoder::Decoder;
 use crate::format::GoodbyeItem;
 use crate::util::poll_result_once;

@@ -5,7 +5,7 @@
 use std::ffi::{OsStr, OsString};
 use std::future::Future;
 use std::io;
-use std::mem::{self, size_of, size_of_val, MaybeUninit};
+use std::mem::{self, MaybeUninit, size_of, size_of_val};
 use std::ops::Range;
 use std::os::unix::ffi::{OsStrExt, OsStringExt};
 use std::path::{Path, PathBuf};

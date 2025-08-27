@@ -21,7 +21,7 @@ pub mod decoder;
 pub mod encoder;
 
 #[doc(inline)]
-pub use format::{mode, Stat};
+pub use format::{Stat, mode};
 
 /// File metadata found in pxar archives.
 ///

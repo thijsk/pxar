@@ -2,14 +2,14 @@ use std::collections::HashMap;
 use std::io::Read;
 use std::path::{Path, PathBuf};
 
-use pxar::decoder::sync as decoder;
+use pxar::EntryKind as PxarEntryKind;
+use pxar::Metadata;
 use pxar::decoder::SeqRead;
+use pxar::decoder::sync as decoder;
 use pxar::encoder::sync as encoder;
 use pxar::encoder::{LinkOffset, SeqWrite};
 use pxar::format::acl::{self, Permissions};
-use pxar::format::{mode, Device};
-use pxar::EntryKind as PxarEntryKind;
-use pxar::Metadata;
+use pxar::format::{Device, mode};
 
 use crate::Error;
 

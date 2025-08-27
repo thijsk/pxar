@@ -1,11 +1,11 @@
 use std::io::Read;
 use std::path::Path;
 
+use pxar::EntryKind as PxarEntryKind;
 use pxar::accessor::sync as accessor;
 use pxar::decoder::sync as decoder;
-use pxar::encoder::sync as encoder;
 use pxar::encoder::SeqWrite;
-use pxar::EntryKind as PxarEntryKind;
+use pxar::encoder::sync as encoder;
 
 macro_rules! format_err {
     ($($msg:tt)+) => {

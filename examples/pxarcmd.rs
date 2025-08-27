@@ -5,9 +5,9 @@ use std::os::linux::fs::MetadataExt;
 use std::os::unix::ffi::OsStrExt;
 use std::path::{Path, PathBuf};
 
+use pxar::Metadata;
 use pxar::accessor::Accessor;
 use pxar::encoder::{Encoder, LinkOffset, SeqWrite};
-use pxar::Metadata;
 
 macro_rules! format_err {
     ($($msg:tt)+) => {
