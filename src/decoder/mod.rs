@@ -34,8 +34,8 @@ static mut SCRATCH_BUFFER: MaybeUninit<[u8; 4096]> = MaybeUninit::uninit();
 fn scratch_buffer() -> &'static mut [u8] {
     unsafe {
         let ptr: *mut MaybeUninit<[u8; 4096]> = &raw mut SCRATCH_BUFFER;
-        let ptr: &mut MaybeUninit<[u8; 4096]> = &mut *ptr;
-        &mut (*ptr.as_mut_ptr())[..]
+        let ptr: &mut [u8; 4096] = &mut *(*ptr).as_mut_ptr();
+        &mut ptr[..]
     }
 }
 
