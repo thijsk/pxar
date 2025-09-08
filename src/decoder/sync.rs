@@ -77,7 +77,7 @@ impl<T: SeqRead> Decoder<T> {
     }
 
     /// Get a reader for the contents of the current entry, if the entry has contents.
-    pub fn contents(&mut self) -> io::Result<Option<Contents<T>>> {
+    pub fn contents(&mut self) -> io::Result<Option<Contents<'_, T>>> {
         let content_reader = poll_result_once(self.inner.content_reader())?;
         Ok(content_reader.map(|inner| Contents { inner }))
     }

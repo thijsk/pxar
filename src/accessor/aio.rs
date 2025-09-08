@@ -209,7 +209,7 @@ impl<T: Clone + ReadAt> Directory<T> {
     }
 
     /// Get an iterator over the directory's contents.
-    pub fn read_dir(&self) -> ReadDir<T> {
+    pub fn read_dir(&self) -> ReadDir<'_, T> {
         ReadDir {
             inner: self.inner.read_dir(),
         }

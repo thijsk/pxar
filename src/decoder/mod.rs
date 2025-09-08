@@ -375,7 +375,7 @@ impl<I: SeqRead> DecoderImpl<I> {
         }
     }
 
-    pub async fn content_reader(&mut self) -> Result<Option<Contents<I>>, io::Error> {
+    pub async fn content_reader(&mut self) -> Result<Option<Contents<'_, I>>, io::Error> {
         if let State::InPayload {
             offset,
             size,

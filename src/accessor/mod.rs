@@ -733,7 +733,7 @@ impl<T: Clone + ReadAt> DirectoryImpl<T> {
         Ok((file_name, file_ofs + head.full_size()))
     }
 
-    pub fn read_dir(&self) -> ReadDirImpl<T> {
+    pub fn read_dir(&self) -> ReadDirImpl<'_, T> {
         ReadDirImpl::new(self, 0)
     }
 
