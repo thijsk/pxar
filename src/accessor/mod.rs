@@ -458,7 +458,10 @@ impl<T: Clone + ReadAt> DirectoryImpl<T> {
         };
 
         // sanity check:
-        if this.table_size() % (size_of::<GoodbyeItem>() as u64) != 0 {
+        if !this
+            .table_size()
+            .is_multiple_of(size_of::<GoodbyeItem>() as u64)
+        {
             io_bail!("invalid goodbye table size: {}", this.table_size());
         }
 
