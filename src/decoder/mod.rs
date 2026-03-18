@@ -271,11 +271,11 @@ impl<I: SeqRead> DecoderImpl<I> {
                 State::Begin => {
                     let entry = self.read_next_entry().await.map(Some);
                     // If the first entry is of kind Version, next must be Prelude or Directory
-                    if let Ok(Some(ref entry)) = entry {
-                        if let EntryKind::Version(version) = entry.kind() {
-                            self.version = version.clone();
-                            self.state = State::Prelude;
-                        }
+                    if let Ok(Some(ref entry)) = entry
+                        && let EntryKind::Version(version) = entry.kind()
+                    {
+                        self.version = version.clone();
+                        self.state = State::Prelude;
                     }
                     return entry;
                 }

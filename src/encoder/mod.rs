@@ -284,14 +284,14 @@ impl EncoderState {
             );
         }
 
-        if let Some(previous_payload_offset) = self.previous_payload_offset() {
-            if payload_offset <= previous_payload_offset {
-                io_bail!(
-                    "unexpected payload offset {} not larger than previous offset {}",
-                    payload_offset.raw(),
-                    previous_payload_offset.raw(),
-                );
-            }
+        if let Some(previous_payload_offset) = self.previous_payload_offset()
+            && payload_offset <= previous_payload_offset
+        {
+            io_bail!(
+                "unexpected payload offset {} not larger than previous offset {}",
+                payload_offset.raw(),
+                previous_payload_offset.raw(),
+            );
         }
         self.previous_payload_offset = Some(payload_offset);
 
