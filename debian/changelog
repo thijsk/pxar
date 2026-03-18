@@ -1,3 +1,11 @@
+rust-pxar (1.0.1-1) trixie; urgency=medium
+
+  * various clippy fixes
+
+  * encoder: improve consistency check for payload reference offsets
+
+ -- Proxmox Support Team <support@proxmox.com>  Wed, 18 Mar 2026 09:14:06 +0100
+
 rust-pxar (1.0.0-1) trixie; urgency=medium
 
   * update to edition 2024
